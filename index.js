@@ -12,15 +12,16 @@ const app = express();
 //   origin: true
 // }));
 
-// Allow all origins for development (NOT for production)
 app.use(cors({
-  origin: true,
-  credentials: true
+    origin: [
+        'https://redesigned-tribble-vr4rgxrvwx6hp99v-5500.app.github.dev',
+        'http://localhost:5500',
+        'http://127.0.0.1:5500'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
-
-// Your existing middleware
-app.use(express.json());
-
 app.get('/', async (req, res) => {
   res.send('Welcome to Gmail API with NodeJS');
 });

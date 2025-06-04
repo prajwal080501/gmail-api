@@ -2,6 +2,7 @@ const { createConfig } = require('./utils');
 const nodemailer = require('nodemailer');
 const CONSTANTS = require('./constants');
 const { google } = require('googleapis');
+const axios = require('axios'); // Add this import
 
 require('dotenv').config();
 
@@ -17,7 +18,7 @@ async function sendMail(req, res) {
     try {
         console.log('Sending mail...');
         const accessToken = await oAuth2Client.getAccessToken();
-        let token = await accessToken.token;
+        let token = accessToken.token;
 
         const transport = nodemailer.createTransport({
             service: 'gmail',
@@ -37,11 +38,11 @@ async function sendMail(req, res) {
 
         const result = await transport.sendMail(mailOptions);
         console.log('Email sent: ', result);
-        res.send(result);
+        res.json({ success: true, result }); // Use res.json instead of res.send
     }
     catch (error) {
         console.log(error);
-        res.send(error);
+        res.status(500).json({ success: false, error: error.message });
     }
 }
 
@@ -50,12 +51,12 @@ async function getUser(req, res) {
         const url = `https://gmail.googleapis.com/gmail/v1/users/${req.params.email}/profile`;
         const { token } = await oAuth2Client.getAccessToken();
         const config = createConfig(url, token);
-        const response = await fetch(config);
+        const response = await axios(config); // Use axios instead of fetch
         res.json(response.data);
     }
-    catch (err) {
+    catch (error) { // Fixed variable name from 'err' to 'error'
         console.log(error);
-        res.send(error);
+        res.status(500).json({ success: false, error: error.message });
     }
 }
 
@@ -64,12 +65,12 @@ async function getMails(req, res) {
         const url = `https://gmail.googleapis.com/gmail/v1/users/${req.params.email}/threads?maxResults=100`;
         const { token } = await oAuth2Client.getAccessToken();
         const config = createConfig(url, token);
-        const response = await fetch(config);
+        const response = await axios(config); // Use axios instead of fetch
         res.json(response.data);
     }
     catch (error) {
         console.log(error);
-        res.send(error);
+        res.status(500).json({ success: false, error: error.message });
     }
 }
 
@@ -78,12 +79,12 @@ async function getDrafts(req, res) {
         const url = `https://gmail.googleapis.com/gmail/v1/users/${req.params.email}/drafts`;
         const { token } = await oAuth2Client.getAccessToken();
         const config = createConfig(url, token);
-        const response = await fetch(config);
+        const response = await axios(config); // Use axios instead of fetch
         res.json(response.data);
     }
     catch (error) {
         console.log(error);
-        res.send(error);
+        res.status(500).json({ success: false, error: error.message });
     }
 }
 
@@ -92,14 +93,13 @@ async function readMail(req, res) {
         const url = `https://gmail.googleapis.com/gmail/v1/users/${req.params.email}/messages/${req.params.messageId}`;
         const { token } = await oAuth2Client.getAccessToken();
         const config = createConfig(url, token);
-        const response = await fetch(config);
-
-        let data = await response.data;
-        res.json(data);
+        const response = await axios(config); // Use axios instead of fetch
+        
+        res.json(response.data); // Remove unnecessary variable assignment
     }
     catch (error) {
         console.log(error);
-        res.send(error);
+        res.status(500).json({ success: false, error: error.message });
     }
 }
 

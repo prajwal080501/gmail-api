@@ -11,8 +11,8 @@ const auth = {
 
 
 const mailOptions = {    
-    to: 'praju.ladkat@gmail.com',
-    from: 'prajwal.ladkat@datadynamx.com',
+    to: 'vaibhav.bombe@datadynamx.com',
+    from: 'iamprajwalladkat@gmail.com',
     subject: 'Gmail API using Node JS',
 };
 
